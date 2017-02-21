@@ -84,7 +84,6 @@ public:
 	OUTPUT: ---
 	*/
 	void GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color);
-	void AddTri(vector3 bottomleft, vector3 bottomright, vector3 topleft);
 	/* Generates a plane shape */
 	/*
 	USAGE:

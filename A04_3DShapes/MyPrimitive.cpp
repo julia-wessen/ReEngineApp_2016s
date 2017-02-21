@@ -111,38 +111,15 @@ void MyPrimitive::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivis
 
 	//Your code starts here
 	float fValue = 0.5f;
-	
-	std::vector<vector3> points;
-	float theta = 0; 
-	vector3 basecenter(0.0f, -a_fHeight, 0.0f);
-	vector3 topcenter(0.0f, a_fHeight, 0.0f);
+	//3--2
+	//|  |
+	//0--1
+	vector3 point0(-fValue, -fValue, fValue); //0
+	vector3 point1(fValue, -fValue, fValue); //1
+	vector3 point2(fValue, fValue, fValue); //2
+	vector3 point3(-fValue, fValue, fValue); //3
 
-	//theta travels around and creates the base
-	float travel = 2 * PI / static_cast<float>(a_nSubdivisions);
-
-
-	//make bases of the cone ---------------------------------------------
-	for (int i = 0; i < a_nSubdivisions; i++)
-	{
-		points.push_back(vector3(cos(theta), -a_fHeight, sin(theta)));
-		theta += travel;
-	}
-	for (int i = 0; i < a_nSubdivisions-1; i++)
-	{
-		//drawing the triangles using addtri
-		AddTri(points[i+1], points[i],basecenter); 
-		AddTri(points[i], points[i + 1], topcenter);
-	}
-
-	//connecting the last parts
-	AddTri(points[0], points[a_nSubdivisions - 1], basecenter);
-	AddTri(points[0], points[a_nSubdivisions - 1], topcenter);
-
-	//Done creating the shape, so pop because we are done with the shape
-	for (int i = 0; i < a_nSubdivisions; i++)
-	{
-		points.pop_back(); 
-	}
+	AddQuad(point0, point1, point3, point2);
 
 	//Your code ends here
 	CompileObject(a_v3Color);
@@ -156,46 +133,18 @@ void MyPrimitive::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubd
 
 	Release();
 	Init();
+
 	//Your code starts here
 	float fValue = 0.5f;
+	//3--2
+	//|  |
+	//0--1
+	vector3 point0(-fValue, -fValue, fValue); //0
+	vector3 point1(fValue, -fValue, fValue); //1
+	vector3 point2(fValue, fValue, fValue); //2
+	vector3 point3(-fValue, fValue, fValue); //3
 
-	std::vector<vector3> points;
-	std::vector<vector3> points2;
-	float theta = 0;
-	vector3 basecenter(0.0f, -a_fHeight, 0.0f);
-	vector3 topcenter(0.0f, a_fHeight, 0.0f);
-
-	//theta travels around and creates the base
-	float travel = 2 * PI / static_cast<float>(a_nSubdivisions);
-
-
-	//make bases of the cylindar---------------------------------------------
-	for (int i = 0; i < a_nSubdivisions; i++)
-	{
-		points.push_back(vector3(cos(theta), -a_fHeight, sin(theta)));
-		points2.push_back(vector3(cos(theta), a_fHeight, sin(theta)));
-		theta += travel;
-	}
-
-	for (int i = 0; i < a_nSubdivisions - 1; i++)
-	{
-		
-		AddTri(points[i+1], points[i], basecenter);
-		AddTri(points2[i], points2[i+1], topcenter);
-		AddQuad(points[i+1], points[i], points2[i+1], points2[i]);
-	}
-
-	//connecting the last parts
-	AddTri(points[0], points[a_nSubdivisions - 1], basecenter);
-	AddTri(points2[a_nSubdivisions - 1],points2[0], topcenter);
-	AddQuad(points[0], points[a_nSubdivisions - 1], points2[0], points2[a_nSubdivisions - 1] );
-
-	//Done creating the shape, so pop because we are done with the shape
-	for (int i = 0; i < a_nSubdivisions; i++)
-	{
-		points.pop_back();
-		points2.pop_back();
-	}
+	AddQuad(point0, point1, point3, point2);
 
 	//Your code ends here
 	CompileObject(a_v3Color);
@@ -212,96 +161,78 @@ void MyPrimitive::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float
 
 	//Your code starts here
 	float fValue = 0.5f;
+	//3--2
+	//|  |
+	//0--1
+	vector3 point0(-fValue, -fValue, fValue); //0
+	vector3 point1(fValue, -fValue, fValue); //1
+	vector3 point2(fValue, fValue, fValue); //2
+	vector3 point3(-fValue, fValue, fValue); //3
 
-	std::vector<vector3> topouter;
-	std::vector<vector3> topinner;
-	std::vector<vector3> bottomouter;
-	std::vector<vector3> bottominner;
-	float theta = 0;
+	AddQuad(point0, point1, point3, point2);
 
-	//theta travels around and creates the base
-	float travel = 2 * PI / static_cast<float>(a_nSubdivisions);
+	//Your code ends here
+	CompileObject(a_v3Color);
+}
+void MyPrimitive::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSubdivisionsA, int a_nSubdivisionsB, vector3 a_v3Color)
+{
+	if (a_fOuterRadius <= a_fInnerRadius + 0.1f)
+		return;
 
+	if (a_nSubdivisionsA < 3)
+		a_nSubdivisionsA = 3;
+	if (a_nSubdivisionsA > 25)
+		a_nSubdivisionsA = 25;
 
-	//make bases--------------------------------------------
-	for (int i = 0; i < a_nSubdivisions; i++)
-	{
-		//making points 
-		topouter.push_back(vector3(cos(theta)*a_fOuterRadius, a_fHeight, sin(theta)*a_fOuterRadius));
-		topinner.push_back(vector3(cos(theta)*a_fInnerRadius, a_fHeight, sin(theta)*a_fInnerRadius));
-		bottominner.push_back(vector3(cos(theta)*a_fInnerRadius, -a_fHeight, sin(theta)*a_fInnerRadius));
-		bottomouter.push_back(vector3(cos(theta)*a_fOuterRadius, -a_fHeight, sin(theta)*a_fOuterRadius));
-		theta += travel;
-	}
+	if (a_nSubdivisionsB < 3)
+		a_nSubdivisionsB = 3;
+	if (a_nSubdivisionsB > 25)
+		a_nSubdivisionsB = 25;
 
-	//drawing the quads
-	for (int i = 0; i < a_nSubdivisions - 1; i++)
-	{
-		AddQuad(bottomouter[i + 1], bottomouter[i], topouter[i + 1], topouter[i]);
-		AddQuad(bottominner[i], bottominner[i+1], topinner[i], topinner[i+1]);
-		AddQuad(topouter[i+1], topouter[i], topinner[i+1], topinner[i]);
-		AddQuad(bottomouter[i], bottomouter[i+1], bottominner[i], bottominner[i+1]);
-	}
+	Release();
+	Init();
 
-	//connecting the last parts
-	AddQuad(bottomouter[0], bottomouter[a_nSubdivisions-1], topouter[0], topouter[a_nSubdivisions-1]);
-	AddQuad(bottominner[a_nSubdivisions-1], bottominner[0], topinner[a_nSubdivisions-1], topinner[0]);
-	AddQuad(topouter[0], topouter[a_nSubdivisions-1], topinner[0], topinner[a_nSubdivisions-1]);
-	AddQuad(bottomouter[a_nSubdivisions - 1],bottomouter[0], bottominner[a_nSubdivisions - 1],bottominner[0]);
+	//Your code starts here
+	float fValue = 0.5f;
+	//3--2
+	//|  |
+	//0--1
+	vector3 point0(-fValue, -fValue, fValue); //0
+	vector3 point1(fValue, -fValue, fValue); //1
+	vector3 point2(fValue, fValue, fValue); //2
+	vector3 point3(-fValue, fValue, fValue); //3
 
-	//Done creating the shape, so pop because we are done with the shape
-	for (int i = 0; i < a_nSubdivisions; i++)
-	{
-		bottominner.pop_back();
-		bottomouter.pop_back();
-		topinner.pop_back();
-		topouter.pop_back();
-	}
+	AddQuad(point0, point1, point3, point2);
 
 	//Your code ends here
 	CompileObject(a_v3Color);
 }
 void MyPrimitive::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color)
 {
-
-	if (a_nSubdivisions < 3)
-		a_nSubdivisions = 3;
-	if (a_nSubdivisions > 360)
-		a_nSubdivisions = 360;
+	//Sets minimum and maximum of subdivisions
+	if (a_nSubdivisions < 1)
+	{
+		GenerateCube(a_fRadius * 2, a_v3Color);
+		return;
+	}
+	if (a_nSubdivisions > 6)
+		a_nSubdivisions = 6;
 
 	Release();
 	Init();
 
-	float leftangle;
-	float rightangle;
-	float thetaright;
-	float thetaleft;
-	for (int i = 0; i < a_nSubdivisions; i++)
-	{
-		leftangle = (PI * i) / a_nSubdivisions;
-		rightangle = (PI * (i + 1)) / a_nSubdivisions;
+	//Your code starts here
+	float fValue = 0.5f;
+	//3--2
+	//|  |
+	//0--1
+	vector3 point0(-fValue, -fValue, fValue); //0
+	vector3 point1(fValue, -fValue, fValue); //1
+	vector3 point2(fValue, fValue, fValue); //2
+	vector3 point3(-fValue, fValue, fValue); //3
 
-		for (int j = 0; j < a_nSubdivisions; j++)
-		{
-			thetaleft = (2 * PI * j) / a_nSubdivisions;
-			thetaright = (2 * PI * (j + 1)) / a_nSubdivisions;
+	AddQuad(point0, point1, point3, point2);
 
-
-			vector3 point0(a_fRadius * cos(thetaleft)* sin(leftangle), a_fRadius* cos(leftangle), a_fRadius*sin(thetaleft)*sin(leftangle));
-			vector3 point1(a_fRadius * cos(thetaleft)* sin(rightangle), a_fRadius* cos(rightangle), a_fRadius*sin(thetaleft)*sin(rightangle));
-			vector3 point2(a_fRadius * cos(thetaright)* sin(leftangle), a_fRadius* cos(leftangle), a_fRadius*sin(thetaright)*sin(leftangle));
-			vector3 point3(a_fRadius * cos(thetaright)* sin(rightangle), a_fRadius* cos(rightangle), a_fRadius*sin(thetaright)*sin(rightangle));
-
-			AddQuad(point0, point1, point2, point3);
-		}
-	}
-	
 	//Your code ends here
 	CompileObject(a_v3Color);
-}
-void MyPrimitive::AddTri(vector3 bottomleft, vector3 bottomright, vector3 topleft)
-{
-	AddVertexPosition(topleft);
-	AddVertexPosition(bottomright);
-	AddVertexPosition(bottomleft);
 }
