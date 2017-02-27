@@ -17,14 +17,16 @@ void AppClass::InitVariables(void)
 
 	m_pSun->GenerateSphere(5.936f, 5, REYELLOW);
 	m_pEarth->GenerateTube(0.524f, 0.45f, 0.3f, 10, REBLUE);
-	m_pMoon->GenerateTube(0.524f * 0.27f, 0.45f * 0.27f, 0.3f * 0.27f, 10, REWHITE);
+	m_pMoon->GenerateTube(0.524f * 0.27f, 0.45f * 0.27f, 0.3f * 0.27f, 10, REBLACK);
+
+	//Sets the camera
+	m_pCameraMngr->SetPositionTargetAndView(vector3(0.0f, 25.0f, 0.0f), vector3(0.0f, 0.0f, 0.0f), -REAXISZ);
 }
 
 void AppClass::Update(void)
 {
 #pragma region Does not need changes
-	//Sets the camera
-	m_pCameraMngr->SetPositionTargetAndView(vector3(0.0f, 25.0f, 0.0f), vector3(0.0f, 0.0f, 0.0f), -REAXISZ);
+
 
 	//Update the system's time
 	m_pSystem->UpdateTime();
@@ -46,14 +48,29 @@ void AppClass::Update(void)
 	//This matrices will hold the relative transformation of the Moon and the Earth
 	matrix4 distanceEarth = glm::translate(11.0f, 0.0f, 0.0f);
 	matrix4 distanceMoon = glm::translate(2.0f, 0.0f, 0.0f);
+
+
 #pragma endregion
 
 #pragma region YOUR CODE GOES HERE
 	//Calculate the position of the Earth
 	m_m4Earth = glm::rotate(IDENTITY_M4, m_fEarthTimer, vector3(0.0f, 1.0f, 0.0f));
 
+	//translate it
+	m_m4Earth *= distanceEarth;
+
+	//make it rotate around 
+	m_m4Earth = glm::rotate(m_m4Earth, static_cast<float>(m_fEarthTimer * 28 * (PI * 2)), vector3(1.0f, 0.0f, 0.0f));
+
 	//Calculate the position of the Moon
-	m_m4Moon = glm::rotate(IDENTITY_M4, m_fMoonTimer, vector3(0.0f, 1.0f, 0.0f));
+	m_m4Moon = glm::rotate(IDENTITY_M4, m_fEarthTimer, vector3(0.0f, 1.0f, 0.0f));
+	
+	//start rotating around the earth
+	m_m4Moon = (m_m4Moon * distanceEarth);
+	m_m4Moon = glm::rotate(m_m4Moon, m_fMoonTimer, vector3(0.0f, 1.0f, 0.0f));
+	m_m4Moon = glm::translate(m_m4Moon, vector3(2.0f, 0.0f, 0.0f));
+	m_m4Moon = glm::rotate(m_m4Moon, static_cast<float>(m_fMoonTimer * 1/28* (PI * 2)), vector3(1.0f, 0.0f, 0.0f));
+
 #pragma endregion
 
 #pragma region Print info
